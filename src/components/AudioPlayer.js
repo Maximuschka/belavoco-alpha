@@ -68,7 +68,7 @@ export default class AudioPlayer extends React.Component {
       state = {
         playingState: 'PLAYING',
         fullscreen: this.props.fullscreen,
-        like: null,
+        audiobook: this.props.audiobook,
         trackhash: '',
         position: 0,
         length: 0,
@@ -79,7 +79,6 @@ export default class AudioPlayer extends React.Component {
     };
 
     componentDidMount() {
-        this.setState({ like: this.props.audiobook.liked });
         TrackPlayer.setupPlayer();
         TrackPlayer.updateOptions({
             // stopWithApp: true,
@@ -121,7 +120,7 @@ export default class AudioPlayer extends React.Component {
             // console.log('nextProps: ' + nextProps.liked);
             this.setState({
                 fullscreen: nextProps.fullscreen,
-                like: nextProps.audiobook.liked,
+                audiobook: nextProps.audiobook,
             });
         }
     }
@@ -130,6 +129,11 @@ export default class AudioPlayer extends React.Component {
         if (status === 'FINISHED') {
         } else if (status === 'TRACK_CHANGED') {
             this.refreshCommentData();
+
+            // changes current props.audiobook to ensure proper display and 
+            // behaviour of LikeButton
+            const newAudiobook = utils.getAudioBookFromHash(TrackStore.id, this.props.audiobooks);
+            this.state.audiobook = newAudiobook;
         }
       }
 
@@ -162,13 +166,8 @@ export default class AudioPlayer extends React.Component {
         this.playOrPause();
     }
 
-    likeHandler(alterLike) {
-        this.setState({
-            like: !this.state.like
-        },
-        () => { this.props.audiobook.liked = this.state.like }
-        );
-        this.props.audiobook.times_liked = this.props.audiobook.times_liked + alterLike;
+    likeHandler() {
+        this.state.audiobook.liked = !this.state.audiobook.liked;
       }
 
     async playOrPause() {
@@ -279,9 +278,9 @@ export default class AudioPlayer extends React.Component {
                             </View>
                         </TouchableWithoutFeedback>
                         <LikeButtonGeneric
-                            hash={this.props.audiobook.hash}
+                            hash={this.state.audiobook.hash}
                             size={35}
-                            like={this.state.like}
+                            like={this.state.audiobook.liked}
                             // colorLike='grey'
                             likeHandler={this.likeHandler.bind(this)}
                             addLike={apiUtils.addLike.bind(this)}
@@ -439,7 +438,9 @@ export default class AudioPlayer extends React.Component {
     }
 
     render() {
-        console.log(this.state.thirtyButtons);
+        // console.log('From AudioBook: ' + this.state.audiobook.hash);
+        // console.log('From AudioBook: ' + this.state.audiobook.liked);
+        // console.log('From TrackPlayer: ' + TrackStore.id);
         // console.log('Current Trackhash (in state): ' + this.state.trackhash);
         // console.log('Current Position (in state): ' + this.state.position);
         return (

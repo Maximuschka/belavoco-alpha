@@ -134,10 +134,10 @@ const apiUtils = {
         const endpoint = API_ENDPOINT_TRACK.concat(trackhash, '/progress');
         const userhash = await utils.getUserParameter('hash');
 
-        console.log('#############');
-        console.log(trackhash);
-        console.log(progressStatus);
-        console.log('#############');
+        // console.log('#############');
+        // console.log(trackhash);
+        // console.log(progressStatus);
+        // console.log('#############');
 
         fetch(endpoint, {
             method: 'PUT',

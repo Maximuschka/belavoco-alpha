@@ -18,13 +18,14 @@ TrackPlayer.registerEventHandler(async (data) => {
     if (data.type === 'playback-track-changed') {
         apiUtils.transmitProgress();
         apiUtils.sendPlayCount();
-        DeviceEventEmitter.emit('playback-info', 'TRACK_CHANGED');
         if (data.nextTrack) {
           const track = await TrackPlayer.getTrack(data.nextTrack);
+          TrackStore.id = track.id;
           TrackStore.title = track.title;
           TrackStore.artist = track.artist;
           TrackStore.artwork = track.artwork;
         }
+        DeviceEventEmitter.emit('playback-info', 'TRACK_CHANGED');
       } else if (data.type === 'remote-play') {
             TrackPlayer.play();
       } else if (data.type === 'remote-pause') {
