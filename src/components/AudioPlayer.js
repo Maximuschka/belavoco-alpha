@@ -3,7 +3,6 @@ import React from 'react';
 
 import { View,
          Text, 
-         TouchableOpacity,
          TouchableWithoutFeedback,
          DeviceEventEmitter
         } from 'react-native';
@@ -21,10 +20,7 @@ import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
 import {
     PlayButton,
     ProgressDisplay,
-    IconButton, 
-    CommentSection,
     Comment,
-    AutoPlaySwitch,
     LikeButtonGeneric
     } from './common';
 
@@ -130,9 +126,11 @@ export default class AudioPlayer extends React.Component {
         if (status === 'FINISHED') {
         } else if (status === 'TRACK_CHANGED') {
             this.refreshCommentData();
-
-            // changes current props.audiobook to ensure proper display and 
-            // behaviour of LikeButton
+            
+            /* 
+            changes current props.audiobook to ensure proper display and 
+            behaviour of LikeButton
+            */
             const newAudiobook = utils.getAudioBookFromHash(TrackStore.id, this.props.audiobooks);
             this.state.audiobook = newAudiobook;
         }
@@ -200,104 +198,40 @@ export default class AudioPlayer extends React.Component {
             containerStyle,
             infoContainerStyle,
             progressContainerStyle,
-            playButtonContainer,
-            buttonContainer,
             infoContainer,
             authorStyle,
             titleStyle,
-            autoPlayContainerStyle,
-            commentsContainerStyle,
         } = styles;
 
-        if (this.state.fullscreen) {
-            return (
-                <View style={containerStyle}>
-                    <View style={stylesLargeAP.movedPlayerStyle}>
-                        <View style={stylesLargeAP.infoContainerStyle}>
-                            {this.renderButtonsLargePlayer(PlayButtonPress)}
-                            <IconButton 
-                                onPress={this.minimizePlayer.bind(this)}
-                                name='arrow-round-down'
-                                size={20}
-                                type='ionicon'
-                                color='grey'
-                            />
+        return (
+            <View style={containerStyle}>
+                <View style={infoContainerStyle}>
+                    {this.renderButtons(PlayButtonPress)}
+                    <TouchableWithoutFeedback onPress={this.toggleButtons.bind(this)} >
+                        <View style={infoContainer}>
+                            <Text numberOfLines={1} style={authorStyle}>{TrackStore.artist}</Text>
+                            <Text numberOfLines={1} style={titleStyle}>{TrackStore.title}</Text>
                         </View>
-
-                        <TouchableOpacity 
-                            onPress={this.minimizePlayer.bind(this)}
-                            style={stylesLargeAP.infoContainer}
-                        >
-                            <View style={{ flex: 1 }} />
-                            <View style={{ flex: 100, flexDirection: 'row', justifyContent: 'center' }} >
-                                <Text 
-                                    numberOfLines={1} 
-                                    style={titleStyle} 
-                                >
-                                    {TrackStore.artist} - {TrackStore.title}
-                                </Text>
-                            </View>
-                            <View style={{ flex: 1 }} />
-                        </TouchableOpacity>
-
-                        <View style={progressContainerStyle}>
-                            <ProgressBar />
-                            <ProgressDisplay
-                                position={this.state.position}
-                                length={this.state.length}
-                            />
-                        </View>
-                    </View>
-                    {/* <View style={autoPlayContainerStyle}>
-                        <View style={{ flex: 2 }}>
-                            <Text style={titleStyle}>{'Autoplay: '}</Text>
-                        </View>
-                        <View style={{ flex: 7, alignItems: 'flex-start' }}>
-                            <AutoPlaySwitch />
-                        </View>
-                    </View> */}
-                    <View style={commentsContainerStyle}>
-                        <CommentSection
-                            trackhash={this.state.trackhash} 
-                            remoteRefresh={this.remoteRefresh.bind(this)}
-                        >
-                            {this.renderComments()}
-                        </CommentSection>
-                    </View>
-                    
+                    </TouchableWithoutFeedback>
+                    <LikeButtonGeneric
+                        hash={this.state.audiobook.hash}
+                        size={35}
+                        like={this.state.audiobook.liked}
+                        // colorLike='grey'
+                        likeHandler={this.likeHandler.bind(this)}
+                        addLike={apiUtils.addLike.bind(this)}
+                        substractLike={apiUtils.substractLike.bind(this)}
+                    />
                 </View>
-            );
-        } else if (this.state.fullscreen === false) {
-            return (
-                <View style={containerStyle}>
-                    <View style={infoContainerStyle}>
-                        {this.renderButtons(PlayButtonPress)}
-                        <TouchableWithoutFeedback onPress={this.toggleButtons.bind(this)} >
-                            <View style={infoContainer}>
-                                <Text numberOfLines={1} style={authorStyle}>{TrackStore.artist}</Text>
-                                <Text numberOfLines={1} style={titleStyle}>{TrackStore.title}</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        <LikeButtonGeneric
-                            hash={this.state.audiobook.hash}
-                            size={35}
-                            like={this.state.audiobook.liked}
-                            // colorLike='grey'
-                            likeHandler={this.likeHandler.bind(this)}
-                            addLike={apiUtils.addLike.bind(this)}
-                            substractLike={apiUtils.substractLike.bind(this)}
-                        />
-                    </View>
-                    <View style={progressContainerStyle}>
-                        <ProgressBar />
-                        <ProgressDisplay
-                            position={this.state.position}
-                            length={this.state.length}
-                        />
-                    </View>
+                <View style={progressContainerStyle}>
+                    <ProgressBar />
+                    <ProgressDisplay
+                        position={this.state.position}
+                        length={this.state.length}
+                    />
                 </View>
-            );
-        }
+            </View>
+        );
     }
 
     renderButtons() {
@@ -396,52 +330,6 @@ export default class AudioPlayer extends React.Component {
             /> 
         );
     }
-
-    // renderButtonsLargePlayer(PlayButtonPress) {
-    //     const {
-    //         playButtonContainer,
-    //         buttonContainer,
-    //     } = styles;
-
-    //     if (this.state.thirtyButtons) {
-    //         return (
-    //             <View style={{ flex: 1, flexDirection: 'row', }}>
-    //                 <TouchableOpacity 
-    //                     onPress={this.minimizePlayer.bind(this)} 
-    //                     style={{ flex: 2 }} 
-    //                 />
-    //                 <View style={buttonContainer}>
-    //                     <Icon 
-    //                         onPress={playerUtils.rewindThirty.bind(this)}
-    //                         name='replay-30'
-    //                         size={thirtySize}
-    //                         type='materialicons'
-    //                         color='grey'
-    //                         underlayColor={Colors.audioPlayer}
-    //                     />
-    //                     <View style={playButtonContainer}>
-    //                         <PlayButton
-    //                             playingState={this.state.playingState}
-    //                             PlayButtonPress={PlayButtonPress}
-    //                         />
-    //                     </View>
-    //                     <Icon 
-    //                         onPress={playerUtils.forwardThirty.bind(this)}
-    //                         name='forward-30'
-    //                         size={thirtySize}
-    //                         type='materialicons'
-    //                         color='grey'
-    //                         underlayColor={Colors.audioPlayer}
-    //                     /> 
-    //                 </View>
-    //                 <TouchableOpacity 
-    //                     onPress={this.minimizePlayer.bind(this)} 
-    //                     style={{ flex: 2 }} 
-    //                 />
-    //             </View>
-    //         );
-    //     }
-    // }
 
     renderComments() {
         if (this.state.loadingComments === true) {
@@ -545,39 +433,8 @@ const styles = {
         // marginLeft: 8,
         // flex: 1,
     },
-    autoPlayContainerStyle: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 10,
-        flex: 1,
-    },
-    commentsContainerStyle: {
-        flex: 8,
-    },
     emptyTextStyle: {
         fontSize: 20,
         alignSelf: 'center',
-    },
-};
-const stylesLargeAP = {
-    movedPlayerStyle: {
-        // paddingTop: 5,
-        height: 90, 
-    },
-    infoContainerStyle: {
-        justifyContent: 'center',
-        flexDirection: 'row',
-        borderColor: '#ddd',
-        position: 'relative',
-        flex: 2,
-    },
-    infoContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginLeft: 10,
-        marginRight: 10,
-        flex: 1,
     },
 };
