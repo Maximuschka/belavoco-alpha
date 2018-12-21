@@ -14,4 +14,5 @@ export default {
   containerColor: '#e6ecf7',
   audioPlayer: '#92e8a9',
   newAudioFile: '#def7f6',
+  progressStatus: '#92e8a9',
 };

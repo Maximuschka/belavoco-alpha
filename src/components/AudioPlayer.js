@@ -42,6 +42,7 @@ import Colors from '../constants/Colors';
 
 // Make a component
 
+let isLastTrackInQueue;
 let interval;
 const thirtySize = 30;
 const API_ENDPOINT_COMMENTS = settings.getBackendHost().concat('/api/comment/');
@@ -299,54 +300,83 @@ export default class AudioPlayer extends React.Component {
         }
     }
 
-    renderButtons(PlayButtonPress) {
+    renderButtons() {
         const {
-            playButtonContainer,
             buttonContainer,
         } = styles;
+        return (
+            <View style={buttonContainer}>
+                {this.renderRewindButton()}
+                {this.renderPlayButton()}
+                {this.renderForwardButton()}
+            </View>
+        );
+    }
+
+    renderPlayButton() {
+        const PlayButtonPress = this.PlayButtonPress;
+        const {
+            playButtonContainer,
+        } = styles;
+        return (
+            <View style={playButtonContainer}>
+                <PlayButton
+                    playingState={this.state.playingState}
+                    PlayButtonPress={PlayButtonPress}
+                />
+            </View>
+        );
+    }
+
+    renderRewindButton() {
         if (this.state.thirtyButtons) {
             return (
-                <View style={buttonContainer}>
-                    <Icon 
-                        onPress={playerUtils.rewindThirty.bind(this)}
-                        name='replay-30'
-                        size={thirtySize}
-                        type='materialicons'
-                        color='grey'
-                        underlayColor={Colors.audioPlayer}
-                    />
-                    <View style={playButtonContainer}>
-                        <PlayButton
-                            playingState={this.state.playingState}
-                            PlayButtonPress={PlayButtonPress}
-                        />
-                    </View>
-                    <Icon 
-                        onPress={playerUtils.forwardThirty.bind(this)}
-                        name='forward-30'
-                        size={thirtySize}
-                        type='materialicons'
-                        color='grey'
-                        underlayColor={Colors.audioPlayer}
-                    /> 
-                </View>
-            );
-        } return (
-            <View style={buttonContainer}>
                 <Icon 
-                    onPress={playerUtils.skipPrevious.bind(this)}
-                    name='skip-previous'
+                    onPress={playerUtils.rewindThirty.bind(this)}
+                    name='replay-30'
                     size={thirtySize}
                     type='materialicons'
                     color='grey'
                     underlayColor={Colors.audioPlayer}
                 />
-                <View style={playButtonContainer}>
-                    <PlayButton
-                        playingState={this.state.playingState}
-                        PlayButtonPress={PlayButtonPress}
-                    />
-                </View>
+            ); 
+        } return (
+            <Icon 
+                onPress={playerUtils.skipPrevious.bind(this)}
+                name='skip-previous'
+                size={thirtySize}
+                type='materialicons'
+                color='grey'
+                underlayColor={Colors.audioPlayer}
+            />
+        );
+    }
+
+    renderForwardButton() {
+        if (this.state.thirtyButtons) {
+            return (
+                <Icon 
+                    onPress={playerUtils.forwardThirty.bind(this)}
+                    name='forward-30'
+                    size={thirtySize}
+                    type='materialicons'
+                    color='grey'
+                    underlayColor={Colors.audioPlayer}
+                /> 
+            ); 
+        } return (
+            <View>
+                {this.renderSkipNextButton()}
+            </View>
+        );
+    }
+
+    renderSkipNextButton() {
+        playerUtils.isLastTrackInQueue().then((value) => {
+            isLastTrackInQueue = value;
+        });
+        if (!isLastTrackInQueue) {
+            return (
                 <Icon 
                     onPress={playerUtils.skipNext.bind(this)}
                     name='skip-next'
@@ -355,55 +385,63 @@ export default class AudioPlayer extends React.Component {
                     color='grey'
                     underlayColor={Colors.audioPlayer}
                 /> 
-            </View>
+            );
+        } return (
+            <Icon 
+                name='skip-next'
+                size={thirtySize}
+                type='materialicons'
+                color={Colors.audioPlayer}
+                underlayColor={Colors.audioPlayer}
+            /> 
         );
     }
 
-    renderButtonsLargePlayer(PlayButtonPress) {
-        const {
-            playButtonContainer,
-            buttonContainer,
-        } = styles;
+    // renderButtonsLargePlayer(PlayButtonPress) {
+    //     const {
+    //         playButtonContainer,
+    //         buttonContainer,
+    //     } = styles;
 
-        if (this.state.thirtyButtons) {
-            return (
-                <View style={{ flex: 1, flexDirection: 'row', }}>
-                    <TouchableOpacity 
-                        onPress={this.minimizePlayer.bind(this)} 
-                        style={{ flex: 2 }} 
-                    />
-                    <View style={buttonContainer}>
-                        <Icon 
-                            onPress={playerUtils.rewindThirty.bind(this)}
-                            name='replay-30'
-                            size={thirtySize}
-                            type='materialicons'
-                            color='grey'
-                            underlayColor={Colors.audioPlayer}
-                        />
-                        <View style={playButtonContainer}>
-                            <PlayButton
-                                playingState={this.state.playingState}
-                                PlayButtonPress={PlayButtonPress}
-                            />
-                        </View>
-                        <Icon 
-                            onPress={playerUtils.forwardThirty.bind(this)}
-                            name='forward-30'
-                            size={thirtySize}
-                            type='materialicons'
-                            color='grey'
-                            underlayColor={Colors.audioPlayer}
-                        /> 
-                    </View>
-                    <TouchableOpacity 
-                        onPress={this.minimizePlayer.bind(this)} 
-                        style={{ flex: 2 }} 
-                    />
-                </View>
-            );
-        }
-    }
+    //     if (this.state.thirtyButtons) {
+    //         return (
+    //             <View style={{ flex: 1, flexDirection: 'row', }}>
+    //                 <TouchableOpacity 
+    //                     onPress={this.minimizePlayer.bind(this)} 
+    //                     style={{ flex: 2 }} 
+    //                 />
+    //                 <View style={buttonContainer}>
+    //                     <Icon 
+    //                         onPress={playerUtils.rewindThirty.bind(this)}
+    //                         name='replay-30'
+    //                         size={thirtySize}
+    //                         type='materialicons'
+    //                         color='grey'
+    //                         underlayColor={Colors.audioPlayer}
+    //                     />
+    //                     <View style={playButtonContainer}>
+    //                         <PlayButton
+    //                             playingState={this.state.playingState}
+    //                             PlayButtonPress={PlayButtonPress}
+    //                         />
+    //                     </View>
+    //                     <Icon 
+    //                         onPress={playerUtils.forwardThirty.bind(this)}
+    //                         name='forward-30'
+    //                         size={thirtySize}
+    //                         type='materialicons'
+    //                         color='grey'
+    //                         underlayColor={Colors.audioPlayer}
+    //                     /> 
+    //                 </View>
+    //                 <TouchableOpacity 
+    //                     onPress={this.minimizePlayer.bind(this)} 
+    //                     style={{ flex: 2 }} 
+    //                 />
+    //             </View>
+    //         );
+    //     }
+    // }
 
     renderComments() {
         if (this.state.loadingComments === true) {

@@ -19,7 +19,7 @@ const playerUtils = {
             TrackPlayer.add(playlist).then(() => {
                 TrackPlayer.skip(audioBookToPlay.hash);
                 TrackPlayer.play();
-                // TrackPlayer.seekTo(audioBookToPlay.progressStatus);
+                TrackPlayer.seekTo(parseInt(audioBookToPlay.progressStatus));
             });
         } 
     },
@@ -36,7 +36,14 @@ const playerUtils = {
         TrackPlayer.seekTo(newPosition);
     },
     async skipPrevious() {
-        TrackPlayer.skipToPrevious();
+        const queue = await TrackPlayer.getQueue();
+        const currentTrackHash = await TrackPlayer.getCurrentTrack();
+        const currentIndex = queue.findIndex(x => x.id === currentTrackHash);
+        if (currentIndex === 0) {
+            TrackPlayer.seekTo(0);
+        } else {
+            TrackPlayer.skipToPrevious();
+        }
     },
     async skipNext() {
         TrackPlayer.skipToNext();
@@ -81,6 +88,13 @@ const playerUtils = {
         }
         const fileUrl = BACKEND_HOST.concat(hash, '/play', ending);
         return fileUrl;
+    },
+    async isLastTrackInQueue() {
+        const queue = await TrackPlayer.getQueue();
+        const queueLength = Object.keys(queue).length;
+        const currentTrackHash = await TrackPlayer.getCurrentTrack();
+        const currentIndex = queue.findIndex(x => x.id === currentTrackHash);
+        return (currentIndex + 1 === queueLength);
     },
     function6() {
         console.log(6);

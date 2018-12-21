@@ -52,7 +52,8 @@ class AudiobookDetail extends React.Component {
             times_liked,
             times_played,
             length,
-            isNew
+            isNew,
+            progressStatus
         } = this.props.audiobook;
 
         const {
@@ -125,7 +126,7 @@ class AudiobookDetail extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <ProgressStatus 
-                            trackProgress={0}
+                            trackProgress={progressStatus}
                             trackLength={length}
                         />
                     </View>

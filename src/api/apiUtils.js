@@ -58,6 +58,8 @@ const apiUtils = {
     getRequestHeader(userhash) {
         const myheaders = {
             'Authorization': userhash,
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
           }
         return (myheaders);
     },
@@ -133,12 +135,7 @@ const apiUtils = {
         // const endpoint = 'https://belavoco.free.beeceptor.com';
         const endpoint = API_ENDPOINT_TRACK.concat(trackhash, '/progress');
         const userhash = await utils.getUserParameter('hash');
-
-        // console.log('#############');
-        // console.log(trackhash);
-        // console.log(progressStatus);
-        // console.log('#############');
-
+        
         fetch(endpoint, {
             method: 'PUT',
             headers: this.getRequestHeader(userhash),
