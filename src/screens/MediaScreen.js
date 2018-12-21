@@ -94,7 +94,8 @@ export default class MediaScreen extends Component {
       headers: apiUtils.getRequestHeader(this.state.userhash)
     })
     .then(response => this.setState({
-        audiobooks: response.data,
+        // audiobooks: response.data,
+        audiobooks: utils.cleanUpAudiobooks(response.data),
         loading: false
        }))
     .catch(e => console.log(e));

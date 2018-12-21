@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import Colors from '../../constants/Colors';
 
 const sFlex = 1;
-const sHeight = 1;
+const sHeight = 2;
 const sAlign = 'flex-start';
 
 // Make a component
@@ -52,13 +52,14 @@ class ProgressStatus extends React.Component {
 
     statusStyle() {
         if (this.getProgressPercentage() === 100) {
-            return this.getStyleJSON('100%', 'white', 4);
+            return this.getStyleJSON('100%', 'white', 3);
         } else if (this.getProgressPercentage() > 0 && this.getProgressPercentage() < 100) {
             const styleParameter = this.getProgressPercentage().toString().concat('%');
-            return this.getStyleJSON(styleParameter, Colors.audioPlayer, 4);
+            return this.getStyleJSON(styleParameter, Colors.audioPlayer, 3);
         } else if (this.getProgressPercentage() === 0) {
-            return this.getStyleJSON(17, 'green', 0);
-        } return this.getStyleJSON('100%', 'yellow', 4);
+            // return this.getStyleJSON(17, 'green', 0);
+            return this.getStyleJSON('100%', 'white', 3);
+        } return this.getStyleJSON('100%', 'yellow', 3);
     }
 
     render() {

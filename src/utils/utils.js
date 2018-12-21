@@ -116,6 +116,31 @@ const utils = {
         const progressStatus = JSON.parse(retrievedItem);
         return progressStatus;
     },
+    cleanUpAudiobooks(audiobooks) {
+        /*
+        Function to clean up the audiobooks retrieved from backend
+        */
+
+        /*
+        Check for progressState. If progressState exceeds a certain percantage, set back to 0
+        This shall ensure, that progressState does not get stuck at a number too high.
+        */
+        let i;
+            for (i = 0; i < Object.keys(audiobooks).length; i++) {
+                if (utils.progressStatusExceedingCriticalLength(audiobooks[i])) {
+                    audiobooks[i].progressStatus = 0;
+                }
+            }
+        return audiobooks;
+    },
+    progressStatusExceedingCriticalLength(audiobook) {
+        const progressInPercent = (audiobook.progressStatus / audiobook.length) * 100;
+        if (audiobook.length <= 100) {
+            return progressInPercent > 90;
+        } else if (100 < audiobook.length & audiobook.length <= 900) {
+            return progressInPercent > 98;
+        } return progressInPercent > 99;
+    },
     function5() {
         console.log(5);
     },
